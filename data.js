@@ -1,6 +1,6 @@
 /* VeriTrust Fleet iPad app — lists from Airtable. Regenerated when drivers/trucks change. */
 window.FLEET_DATA={
- "updated": "2026-10-20T03:55Z",
+ "updated": "2026-10-21T05:31Z",
  "webhook": "https://hooks.airtable.com/workflows/v1/genericWebhook/app1TTblDfyYoWyiA/wflcsBjW5djHCQzoF/wtrAJVMfdIus5Qceq",
  "pinHash": "27b06da2d276152e0952f85805692a5e8bac164c5f805eccf2183acb87fa9cc7",
  "filesEnabled": false,
@@ -156,28 +156,28 @@ window.FLEET_DATA={
   },
   {
    "id": "rec8yh9q3kbHInJdC",
-   "truckNo": "VTS-135",
+   "truckNo": "VTS-3485",
    "type": "Truck",
    "facilityId": "recRb22Q5h64hQpEZ",
    "status": "Active"
   },
   {
    "id": "recEdA2ZFAQhZ3aYo",
-   "truckNo": "VT-185",
+   "truckNo": "VT-2200",
    "type": "Truck",
    "facilityId": "rec9H145bIJjf0uf1",
    "status": "Active"
   },
   {
    "id": "recJSmMVGkVPIqV3j",
-   "truckNo": "VTV-073",
+   "truckNo": "VTV-1774",
    "type": "Van",
    "facilityId": "recRb22Q5h64hQpEZ",
    "status": "Active"
   },
   {
    "id": "recOhPMqOPkUn7oRW",
-   "truckNo": "VTV-072",
+   "truckNo": "VTV-0765",
    "type": "Van",
    "facilityId": "recRb22Q5h64hQpEZ",
    "status": "Active"
@@ -191,7 +191,7 @@ window.FLEET_DATA={
   },
   {
    "id": "recU4u1pqLV5Qk4ni",
-   "truckNo": "VT-198",
+   "truckNo": "VT-0672",
    "type": "Truck",
    "facilityId": "rec9H145bIJjf0uf1",
    "status": "Active"
@@ -205,21 +205,21 @@ window.FLEET_DATA={
   },
   {
    "id": "recbSsUdOqUpzuVyx",
-   "truckNo": "VT-164",
+   "truckNo": "VTS-1375",
    "type": "Truck",
    "facilityId": "recRb22Q5h64hQpEZ",
    "status": "Active"
   },
   {
    "id": "recdat3Xdm0IGS4Lc",
-   "truckNo": "VT-199",
+   "truckNo": "VT-5202",
    "type": "Truck",
    "facilityId": "recgRrtC43LfumleS",
    "status": "Active"
   },
   {
    "id": "recjSNtpj32eQqe02",
-   "truckNo": "VT-156",
+   "truckNo": "VTS-5479",
    "type": "Truck",
    "facilityId": "recRb22Q5h64hQpEZ",
    "status": "Active"
@@ -233,7 +233,7 @@ window.FLEET_DATA={
   },
   {
    "id": "rectt95meZB5mXFCV",
-   "truckNo": "VTS-196",
+   "truckNo": "VTS-8941",
    "type": "Truck",
    "facilityId": "rec9H145bIJjf0uf1",
    "status": "Active"
