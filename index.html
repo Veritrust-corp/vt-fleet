@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="robots" content="noindex,nofollow">
-<link rel="apple-touch-icon" href="img/icon-180.png">
+<link rel="apple-touch-icon" href="icon-180.png">
 <title>VeriTrust Fleet Inspections</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -230,7 +230,7 @@ main{max-width:1020px;margin:0 auto;padding-block:18px 80px;padding-left:max(16p
 </head>
 <body>
 <div class="bar"><div class="bar-in">
-  <div class="brand"><img src="img/veritrust-logo.jpg" alt="VeriTrust"><h1>Fleet Inspections</h1></div>
+  <div class="brand"><img src="veritrust-logo.jpg" alt="VeriTrust"><h1>Fleet Inspections</h1></div>
   
   <div class="who" id="who"><span class="small" id="listsDate"></span></div>
 </div></div>
@@ -242,7 +242,7 @@ main{max-width:1020px;margin:0 auto;padding-block:18px 80px;padding-left:max(16p
   <section id="view-new" class="view" style="display:grid;gap:16px">
     <div class="sheet">
       <div class="formhead">
-        <img src="img/veritrust-logo.jpg" alt="VeriTrust">
+        <img src="veritrust-logo.jpg" alt="VeriTrust">
         <div><div class="kicker">Drivers Vehicle Inspection Report</div><h2 id="formTitle">DVIR — Truck</h2></div>
         <div class="meta"><div>Report No. <span class="mono" id="previewNo">assigned on submit</span></div><div id="clock" class="mono"></div></div>
       </div>
@@ -377,7 +377,7 @@ function toast(msg){const t=document.createElement("div");t.className="toast";t.
 /* ---------- images ---------- */
 const IMG={};
 function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src})}
-function diagramImg(type,side){const k=type+"-"+side;if(!IMG[k])IMG[k]=loadImg("img/"+k+".png");return IMG[k]}
+function diagramImg(type,side){const k=type+"-"+side;if(!IMG[k])IMG[k]=loadImg(""+k+".png");return IMG[k]}
 
 /* ---------- draft (per-device convenience only) ---------- */
 function saveDraft(){try{const d={...F,photos:[]};localStorage.setItem("dvir-draft",JSON.stringify(d))}catch(e){}}
@@ -587,7 +587,7 @@ async function downloadPdf(r){
   toast("Building PDF…");
   const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:"pt",format:"letter"});const PW=612,M=36;let y=M;
   const rv=S.reviews[r.reportNo];
-  try{const logo=await loadImg("img/veritrust-logo.jpg");const c=document.createElement("canvas");c.width=logo.naturalWidth;c.height=logo.naturalHeight;c.getContext("2d").drawImage(logo,0,0);doc.addImage(c.toDataURL("image/jpeg",0.95),"JPEG",M,y,90,31)}catch(e){}
+  try{const logo=await loadImg("veritrust-logo.jpg");const c=document.createElement("canvas");c.width=logo.naturalWidth;c.height=logo.naturalHeight;c.getContext("2d").drawImage(logo,0,0);doc.addImage(c.toDataURL("image/jpeg",0.95),"JPEG",M,y,90,31)}catch(e){}
   doc.setFont("helvetica","bold");doc.setFontSize(15);doc.text("Drivers Vehicle Inspection Report - "+(r.type==="truck"?"Truck":"Van"),M+100,y+14);
   doc.setFontSize(9);doc.setFont("helvetica","normal");doc.text("Report No. "+r.reportNo+"   |   "+r.inspection+"   |   Generated "+fmtDT(r.createdAt),M+100,y+28);
   y+=46;doc.setDrawColor(179,32,42);doc.setLineWidth(1.5);doc.line(M,y,PW-M,y);y+=16;
