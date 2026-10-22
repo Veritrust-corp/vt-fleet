@@ -643,15 +643,22 @@ function addDriverBlock(close,typed){
   const box=document.createElement("div");
   const btn=document.createElement("button");btn.type="button";btn.className="pchoice add";btn.textContent="+ Add new driver";box.appendChild(btn);
   btn.onclick=()=>{
-    box.innerHTML='<div class="newdrv"><div class="field"><label for="ndName">Full name</label><input id="ndName" autocomplete="off"></div><div class="field"><label for="ndCell">Cell number</label><input id="ndCell" inputmode="tel" autocomplete="off"></div><div class="field"><label for="ndFac">Facility</label><select id="ndFac"></select></div><div class="actions"><button type="button" class="btn primary" id="ndSave">Add driver</button></div><div class="errors" id="ndErr"></div></div>';
+    box.innerHTML='<div class="newdrv"><div class="field"><label for="ndName">Full name</label><input id="ndName" autocomplete="off"></div><div class="field"><label for="ndCell">Cell number</label><input id="ndCell" inputmode="tel" autocomplete="off"></div><div class="field"><label for="ndFac">Facility</label><select id="ndFac"></select></div><div class="field"><label for="ndPin">Driver PIN</label><input id="ndPin" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="8" placeholder="••••"></div><div class="actions"><button type="button" class="btn primary" id="ndSave">Add driver</button></div><div class="errors" id="ndErr"></div></div>';
     box.querySelector("#ndName").value=typed||"";
     const sel=box.querySelector("#ndFac");sel.innerHTML=S.facilities.map(f=>'<option value="'+esc(f.id)+'">'+esc(f.name)+'</option>').join("");if(F.facilityId)sel.value=F.facilityId;
-    box.querySelector("#ndSave").onclick=()=>{
+    box.querySelector("#ndSave").onclick=async()=>{
       const name=box.querySelector("#ndName").value.trim().replace(/\s+/g," ");const cell=box.querySelector("#ndCell").value.trim();
       if(name.length<3||!name.includes(" ")){box.querySelector("#ndErr").textContent="Enter the driver's first and last name.";return}
       if(S.drivers.some(d=>d.name.toLowerCase()===name.toLowerCase())){box.querySelector("#ndErr").textContent="That driver is already on the list.";return}
+      const pin=box.querySelector("#ndPin").value.trim();
+      if(!pin){box.querySelector("#ndErr").textContent="Enter the driver PIN to add a driver.";box.querySelector("#ndPin").focus();return}
+      if(D.pinHash){let ok=false;try{ok=(await sha("veritrust:"+pin))===D.pinHash}catch(e){ok=true}if(!ok){box.querySelector("#ndErr").textContent="That PIN is not correct.";box.querySelector("#ndPin").focus();return}}
       const d={id:"new-"+Date.now().toString(36),name,cell,facilityId:sel.value,status:"Active",isNew:true};
-      const a=localDrivers();a.push(d);saveLocalDrivers(a);S.drivers.push(d);F.driverId=d.id;renderPickers();draft();close();toast("Driver added — the office gets it with your report")};
+      const a=localDrivers();a.push(d);saveLocalDrivers(a);S.drivers.push(d);F.driverId=d.id;renderPickers();draft();close();
+      const msg={kind:"driver",pin,name,cell,facilityId:sel.value,localId:d.id};let sent=!!D.webhook;
+      if(sent){if(navigator.onLine===false)sent=false;else{try{await post(msg)}catch(e){sent=false}}}
+      if(!sent&&D.webhook)setOutbox(outbox().concat([msg]));
+      toast(sent?"Driver added and sent to the fleet office":"Driver added — it will reach the office when this iPad is back online")};
     box.querySelector("#ndName").focus()};
   return box}
 
@@ -661,7 +668,7 @@ function show(v){S.view=v;for(const el of document.querySelectorAll(".view"))el.
 function outbox(){try{return JSON.parse(localStorage.getItem("vt-outbox")||"[]")}catch(e){return[]}}
 function setOutbox(a){try{localStorage.setItem("vt-outbox",JSON.stringify(a))}catch(e){}renderOutbox()}
 function renderOutbox(){const n=outbox().length;const el=$("#offline");el.hidden=!n;
-  if(n)el.innerHTML="<b>"+n+" report"+(n>1?"s":"")+" waiting to send.</b> "+(n>1?"They":"It")+" will send automatically when this iPad is back online."}
+  if(n)el.innerHTML="<b>"+n+" item"+(n>1?"s":"")+" waiting to send.</b> "+(n>1?"They":"It")+" will send automatically when this iPad is back online."}
 async function post(obj){const p=new URLSearchParams();p.set("payload",JSON.stringify(obj));p.set("reportNo",obj.reportNo||"");
   await fetch(D.webhook,{method:"POST",mode:"no-cors",body:p})}
 let flushing=false;
