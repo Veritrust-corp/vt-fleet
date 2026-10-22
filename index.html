@@ -266,8 +266,8 @@ main{max-width:1020px;margin:0 auto;padding-block:18px 80px;padding-left:max(16p
           <div class="field"><label for="trailerNo">Trailer(s) No.(s)</label><input id="trailerNo" autocomplete="off" placeholder="If pulling a trailer"></div>
         </div>
         <div class="grid3">
-          <div class="field"><label for="startMiles">Starting Mileage</label><input id="startMiles" inputmode="numeric" pattern="[0-9]*" autocomplete="off"></div>
-          <div class="field"><label for="endMiles">Ending Mileage</label><input id="endMiles" inputmode="numeric" pattern="[0-9]*" autocomplete="off"></div>
+          <div class="field"><label for="startMiles" class="req">Starting Mileage</label><input id="startMiles" inputmode="numeric" pattern="[0-9]*" autocomplete="off"></div>
+          <div class="field"><label for="endMiles" id="endLbl">Ending Mileage</label><input id="endMiles" inputmode="numeric" pattern="[0-9]*" autocomplete="off"></div>
           <div class="field total"><span class="lbl">Total Mileage</span><div class="totalbox mono" id="totalMiles">—</div></div>
         </div>
       </div>
@@ -417,7 +417,7 @@ function setType(t){F.type=t;$("#typeTruck").setAttribute("aria-pressed",t==="tr
   const v=byId(S.fleet,F.vehicleId);if(v&&v.type&&v.type.toLowerCase()!==t){F.vehicleId="";}
   renderChecks();renderPanels();renderPickers();draft()}
 $("#typeTruck").onclick=()=>setType("truck");$("#typeVan").onclick=()=>setType("van");
-function setIns(v){F.inspection=v;$("#insPre").setAttribute("aria-pressed",v==="Pre-Trip");$("#insPost").setAttribute("aria-pressed",v==="Post-Trip");draft()}
+function setIns(v){F.inspection=v;const el=document.getElementById("endLbl");if(el)el.classList.toggle("req",v==="Post-Trip");$("#insPre").setAttribute("aria-pressed",v==="Pre-Trip");$("#insPost").setAttribute("aria-pressed",v==="Post-Trip");draft()}
 $("#insPre").onclick=()=>setIns("Pre-Trip");$("#insPost").onclick=()=>setIns("Post-Trip");
 function miles(){const a=parseInt(F.startMiles,10),b=parseInt(F.endMiles,10);const el=$("#totalMiles");
   if(!isNaN(a)&&!isNaN(b)){const t=b-a;el.textContent=t.toLocaleString()+" mi";el.style.color=t<0?"var(--defect)":""}else{el.textContent="—";el.style.color=""}}
@@ -570,7 +570,7 @@ function drawSig(canvas,strokes,color){const ctx=canvas.getContext("2d");const W
 /* ---------- submit ---------- */
 function reportNo(type){const n=new Date();const p=x=>String(x).padStart(2,"0");const r=Math.random().toString(36).slice(2,4).toUpperCase();
   return "DVIR-"+(type==="truck"?"T":"V")+"-"+String(n.getFullYear()).slice(2)+p(n.getMonth()+1)+p(n.getDate())+"-"+p(n.getHours())+p(n.getMinutes())+r}
-function validate(){const e=[];if(!F.driverId)e.push("driver");if(!F.vehicleId)e.push("truck number");if(!F.facilityId)e.push("location");if(!F.sig.length)e.push("signature");
+function validate(){const e=[];if(!F.driverId)e.push("driver");if(!F.vehicleId)e.push("truck number");if(!F.facilityId)e.push("location");if(!String(F.startMiles||"").trim())e.push("starting mileage");if(F.inspection==="Post-Trip"&&!String(F.endMiles||"").trim())e.push("ending mileage");if(!F.sig.length)e.push("signature");
   const a=parseInt(F.startMiles,10),b=parseInt(F.endMiles,10);let msg=e.length?"Add the "+e.join(", ")+" before submitting.":"";
   if(!isNaN(a)&&!isNaN(b)&&b<a)msg+=(msg?" ":"")+"Ending mileage is lower than starting mileage.";return msg}
 function resetForm(){F.photos.forEach(p=>URL.revokeObjectURL(p.url));const keep={driverId:F.driverId,facilityId:F.facilityId};F=blankForm();Object.assign(F,keep);clearDraft();S.history=[];fillForm()}
