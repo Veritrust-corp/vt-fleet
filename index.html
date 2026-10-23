@@ -140,6 +140,9 @@ main{max-width:1020px;margin:0 auto;padding-block:18px 80px;padding-left:max(16p
 @media (max-width:520px){.panels{grid-template-columns:1fr}}
 .panel{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
 .panel .cap{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:var(--surface-2);border-bottom:1px solid var(--line);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.panel .cap .capr{display:flex;align-items:center;gap:8px}
+.panel .cap .sclr{font:inherit;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#B42318;background:#fff;border:1px solid #F1B8B2;border-radius:8px;padding:6px 12px;min-height:32px;cursor:pointer}
+.panel .cap .sclr[hidden]{display:none}
 .panel canvas{display:block;width:100%;height:auto;touch-action:none;cursor:crosshair}
 .panel.ro canvas{touch-action:auto;cursor:default}
 .photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
@@ -503,11 +506,18 @@ async function paintPanel(canvas,type,side,marks){
   const W=canvas.width,H=canvas.height;ctx.fillStyle="#fff";ctx.fillRect(0,0,W,H);if(img)ctx.drawImage(img,0,0,W,H);drawMarks(ctx,marks,W,H)}
 async function makePanel(type,side,marks,readOnly){
   const wrap=document.createElement("div");wrap.className="panel"+(readOnly?" ro":"");
-  const cap=document.createElement("div");cap.className="cap";cap.innerHTML="<span>"+side+"</span><span>"+(marks.length?marks.length+" mark"+(marks.length>1?"s":""):"")+"</span>";
+  const cap=document.createElement("div");cap.className="cap";cap.innerHTML="<span>"+side+"</span><span class=\"capr\"><span class=\"cnt\"></span></span>";
+  const cnt=cap.querySelector(".cnt");let sclr=null;
   const c=document.createElement("canvas");wrap.append(cap,c);
   const img=await diagramImg(type,side).catch(()=>null);const scale=img&&img.naturalWidth>1000?1:2;
   c.width=(img?img.naturalWidth:500)*scale;c.height=(img?img.naturalHeight:250)*scale;c.setAttribute("aria-label",side+" side diagram");
-  const redraw=()=>{paintPanel(c,type,side,marks);cap.lastChild.textContent=marks.length?marks.length+" mark"+(marks.length>1?"s":""):""};redraw();
+  const redraw=()=>{paintPanel(c,type,side,marks);cnt.textContent=marks.length?marks.length+" mark"+(marks.length>1?"s":""):"";if(sclr)sclr.hidden=!marks.length};
+  if(!readOnly){
+    sclr=document.createElement("button");sclr.type="button";sclr.className="sclr";sclr.textContent="Clear";sclr.setAttribute("aria-label","Clear the "+side+" side");
+    sclr.onclick=()=>{if(sclr.dataset.arm){marks.length=0;S.history=S.history.filter(x=>x!==side);delete sclr.dataset.arm;sclr.textContent="Clear";redraw();draft();toast("Cleared the "+side.toLowerCase()+" side")}
+      else{sclr.dataset.arm="1";sclr.textContent="Tap again";setTimeout(()=>{if(sclr.isConnected&&sclr.dataset.arm){delete sclr.dataset.arm;sclr.textContent="Clear"}},3000)}};
+    cap.querySelector(".capr").appendChild(sclr)}
+  redraw();
   if(!readOnly){let cur=null,start=null;
     const pos=e=>{const r=c.getBoundingClientRect();return[Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)),Math.min(1,Math.max(0,(e.clientY-r.top)/r.height))]};
     c.addEventListener("pointerdown",e=>{e.preventDefault();c.setPointerCapture(e.pointerId);const[x,y]=pos(e);start=[x,y];
