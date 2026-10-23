@@ -657,7 +657,7 @@ function addDriverBlock(close,typed){
   const box=document.createElement("div");
   const btn=document.createElement("button");btn.type="button";btn.className="pchoice add";btn.textContent="+ Add new driver";box.appendChild(btn);
   btn.onclick=()=>{
-    box.innerHTML='<div class="newdrv"><div class="field"><label for="ndName">Full name</label><input id="ndName" autocomplete="off"></div><div class="field"><label for="ndCell">Cell number</label><input id="ndCell" inputmode="tel" autocomplete="off"></div><div class="field"><label for="ndFac">Facility</label><select id="ndFac"></select></div><div class="field"><label for="ndPin">Driver PIN</label><input id="ndPin" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="8" placeholder="••••"></div><div class="actions"><button type="button" class="btn primary" id="ndSave">Add driver</button></div><div class="errors" id="ndErr"></div></div>';
+    box.innerHTML='<div class="newdrv"><div class="field"><label for="ndName">Full name</label><input id="ndName" autocomplete="off"></div><div class="field"><label for="ndCell">Cell number</label><input id="ndCell" inputmode="tel" autocomplete="off"></div><div class="field"><label for="ndFac">Facility</label><select id="ndFac"></select></div><div class="field"><label for="ndPin">New-driver code <small style="font-weight:500">(from your supervisor)</small></label><input id="ndPin" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="8" placeholder="••••"></div><div class="actions"><button type="button" class="btn primary" id="ndSave">Add driver</button></div><div class="errors" id="ndErr"></div></div>';
     box.querySelector("#ndName").value=typed||"";
     const sel=box.querySelector("#ndFac");sel.innerHTML=S.facilities.map(f=>'<option value="'+esc(f.id)+'">'+esc(f.name)+'</option>').join("");if(F.facilityId)sel.value=F.facilityId;
     box.querySelector("#ndSave").onclick=async()=>{
@@ -665,14 +665,14 @@ function addDriverBlock(close,typed){
       if(name.length<3||!name.includes(" ")){box.querySelector("#ndErr").textContent="Enter the driver's first and last name.";return}
       if(S.drivers.some(d=>d.name.toLowerCase()===name.toLowerCase())){box.querySelector("#ndErr").textContent="That driver is already on the list.";return}
       const pin=box.querySelector("#ndPin").value.trim();
-      if(!pin){box.querySelector("#ndErr").textContent="Enter the driver PIN to add a driver.";box.querySelector("#ndPin").focus();return}
-      if(D.pinHash){let ok=false;try{ok=(await sha("veritrust:"+pin))===D.pinHash}catch(e){ok=true}if(!ok){box.querySelector("#ndErr").textContent="That PIN is not correct.";box.querySelector("#ndPin").focus();return}}
+      if(!pin){box.querySelector("#ndErr").textContent="Enter the new-driver code from your supervisor.";box.querySelector("#ndPin").focus();return}
+      if(D.pinHash){let ok=false;try{ok=(await sha("veritrust:"+pin))===D.pinHash}catch(e){ok=true}if(!ok){box.querySelector("#ndErr").textContent="That code is not correct.";box.querySelector("#ndPin").focus();return}}
       const d={id:"new-"+Date.now().toString(36),name,cell,facilityId:sel.value,status:"Active",isNew:true};
       const a=localDrivers();a.push(d);saveLocalDrivers(a);S.drivers.push(d);F.driverId=d.id;renderPickers();draft();close();
       const msg={kind:"driver",pin,name,cell,facilityId:sel.value,localId:d.id};let sent=!!D.webhook;
       if(sent){if(navigator.onLine===false)sent=false;else{try{await post(msg)}catch(e){sent=false}}}
       if(!sent&&D.webhook)setOutbox(outbox().concat([msg]));
-      toast(sent?"Driver added and sent to the fleet office":"Driver added — it will reach the office when this iPad is back online")};
+      toast((sent?"Driver added and sent to the fleet office.":"Driver added — it will reach the office when this iPad is back online.")+" Your supervisor will give you your own PIN. Until then, use the new-driver code.")};
     box.querySelector("#ndName").focus()};
   return box}
 
@@ -711,7 +711,7 @@ $("#submitBtn").onclick=async()=>{
   const err=validate();$("#errors").textContent=err;if(err)return;
   const pin=$("#pin").value.trim();
   if(!pin){$("#errors").textContent="Enter your driver PIN.";$("#pin").focus();return}
-  if(D.pinHash){let ok=false;try{ok=(await sha("veritrust:"+pin))===D.pinHash}catch(e){ok=true}if(!ok){$("#errors").textContent="That PIN is not correct.";$("#pin").focus();return}}
+  if(!/^\d{4,8}$/.test(pin)){$("#errors").textContent="Your PIN is 4 numbers. Ask your supervisor if you don't have it.";$("#pin").focus();return}
   if(!D.webhook){$("#errors").textContent="This iPad isn't set up to send reports. Contact the fleet office.";return}
   const btn=$("#submitBtn");btn.disabled=true;btn.textContent="Sending…";
   try{
