@@ -60,6 +60,9 @@ h1,h2,h3{font-family:var(--f-display);letter-spacing:.01em;text-wrap:balance;mar
 .tab{border:0;background:transparent;padding:8px 14px;border-radius:999px;font-weight:600;color:var(--muted);cursor:pointer}
 .tab[aria-selected="true"]{background:var(--ink);color:var(--surface)}
 .who{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.who{margin-left:auto}
+.trainbtn{display:inline-flex;align-items:center;gap:6px;margin-left:10px;padding:8px 14px;min-height:40px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:15px;text-decoration:none;white-space:nowrap}
+.trainbtn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .role{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink)}
 .role.admin{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 
@@ -237,7 +240,7 @@ main{max-width:1020px;margin:0 auto;padding-block:18px 80px;padding-left:max(16p
 <div class="bar"><div class="bar-in">
   <div class="brand"><img src="veritrust-logo.jpg" alt="VeriTrust"><h1>Fleet Inspections</h1></div>
   
-  <div class="who" id="who"><span class="small" id="listsDate"></span></div>
+  <div class="who" id="who"><span class="small" id="listsDate"></span><a class="trainbtn" href="training.html" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 4 20 12 6 20 6 4"/></svg>Training</a></div>
 </div></div>
 
 <main id="main">
