@@ -1,6 +1,6 @@
 /* VeriTrust Fleet iPad app — lists from Airtable. Regenerated when drivers/trucks change. */
 window.FLEET_DATA={
- "updated": "2026-10-21T05:31Z",
+ "updated": "2026-10-28T02:25Z",
  "webhook": "https://hooks.airtable.com/workflows/v1/genericWebhook/app1TTblDfyYoWyiA/wflcsBjW5djHCQzoF/wtrAJVMfdIus5Qceq",
  "pinHash": "27b06da2d276152e0952f85805692a5e8bac164c5f805eccf2183acb87fa9cc7",
  "filesEnabled": false,
@@ -20,81 +20,9 @@ window.FLEET_DATA={
  ],
  "drivers": [
   {
-   "id": "rec4AfJwXNlR8FTz7",
-   "name": "Rashan Staverns",
-   "facilityId": "rec9H145bIJjf0uf1",
-   "status": "Active"
-  },
-  {
-   "id": "rec7pE1RyaHxQ5uNC",
-   "name": "Reynaldo Barron",
-   "facilityId": "recRb22Q5h64hQpEZ",
-   "status": "Active"
-  },
-  {
-   "id": "rec9mmNRfJeopMjnG",
-   "name": "Eddie Hernandez",
-   "facilityId": "rec9H145bIJjf0uf1",
-   "status": "Active"
-  },
-  {
-   "id": "recBhVVA7Gh4KmQV5",
-   "name": "Justin Munoz",
-   "facilityId": "rec9H145bIJjf0uf1",
-   "status": "Active"
-  },
-  {
-   "id": "recCrly0pma0vBdLG",
-   "name": "Brian Kimble",
-   "facilityId": "recRb22Q5h64hQpEZ",
-   "status": "Active"
-  },
-  {
    "id": "recDQfJvUbgqoFGxV",
    "name": "Abel Alvarez",
    "facilityId": "rec9H145bIJjf0uf1",
-   "status": "Active"
-  },
-  {
-   "id": "recDTgXNg9lmfpkki",
-   "name": "Hector Oviedo",
-   "facilityId": "recRb22Q5h64hQpEZ",
-   "status": "Active"
-  },
-  {
-   "id": "recFBhfYCa7MeqDWI",
-   "name": "Brent Hopson",
-   "facilityId": "recRb22Q5h64hQpEZ",
-   "status": "Active"
-  },
-  {
-   "id": "recFHuGtxp7541nQ8",
-   "name": "James Nash",
-   "facilityId": "recRb22Q5h64hQpEZ",
-   "status": "Active"
-  },
-  {
-   "id": "recI4SlxSjV9EXwYJ",
-   "name": "Luis Elizalde",
-   "facilityId": "recRb22Q5h64hQpEZ",
-   "status": "Active"
-  },
-  {
-   "id": "recMCYRVfmGn9uKTX",
-   "name": "Jose Castillo (Corpus)",
-   "facilityId": "recgRrtC43LfumleS",
-   "status": "Active"
-  },
-  {
-   "id": "recPvKVYqk5HLdAZN",
-   "name": "Jose Castillo (Houston)",
-   "facilityId": "recRb22Q5h64hQpEZ",
-   "status": "Active"
-  },
-  {
-   "id": "recRj3QfkFx6LgRQF",
-   "name": "Marcos Pedraza",
-   "facilityId": "recRb22Q5h64hQpEZ",
    "status": "Active"
   },
   {
@@ -104,20 +32,14 @@ window.FLEET_DATA={
    "status": "Active"
   },
   {
-   "id": "recVExdfJQBj0nHDk",
-   "name": "Jesus Orozco",
+   "id": "recFBhfYCa7MeqDWI",
+   "name": "Brent Hopson",
    "facilityId": "recRb22Q5h64hQpEZ",
    "status": "Active"
   },
   {
-   "id": "recW6z9xZEi2o23Oc",
-   "name": "Jose Vargas",
-   "facilityId": "recRb22Q5h64hQpEZ",
-   "status": "Active"
-  },
-  {
-   "id": "recYwgKZ6zmihkhVt",
-   "name": "Raymond Rodriguez",
+   "id": "recX6XUKSHhjt9mzH",
+   "name": "Carlos Garcia",
    "facilityId": "recRb22Q5h64hQpEZ",
    "status": "Active"
   },
@@ -128,21 +50,87 @@ window.FLEET_DATA={
    "status": "Active"
   },
   {
+   "id": "recfzfJ9J6PKsjQXI",
+   "name": "Domingo Ramirez",
+   "facilityId": "recgRrtC43LfumleS",
+   "status": "Active"
+  },
+  {
    "id": "recfKaVHT1LDAX0bq",
    "name": "Eloy Cortez",
    "facilityId": "recRb22Q5h64hQpEZ",
    "status": "Active"
   },
   {
-   "id": "recgwDyaE9M6E6KDR",
-   "name": "Troy Avant",
+   "id": "recDo6PpqEippvoqp",
+   "name": "Gilbert Ybarra",
+   "facilityId": "rec9H145bIJjf0uf1",
+   "status": "Active"
+  },
+  {
+   "id": "recDTgXNg9lmfpkki",
+   "name": "Hector Oviedo",
    "facilityId": "recRb22Q5h64hQpEZ",
    "status": "Active"
   },
   {
-   "id": "reczsjHvPWRpV1gBF",
-   "name": "Gregory Sadler",
-   "facilityId": "recgRrtC43LfumleS",
+   "id": "recFHuGtxp7541nQ8",
+   "name": "James Nash",
+   "facilityId": "recRb22Q5h64hQpEZ",
+   "status": "Active"
+  },
+  {
+   "id": "recVExdfJQBj0nHDk",
+   "name": "Jesus Orozco",
+   "facilityId": "recRb22Q5h64hQpEZ",
+   "status": "Active"
+  },
+  {
+   "id": "recnWHakGJKWKWrO9",
+   "name": "Jorge Castro",
+   "facilityId": "recRb22Q5h64hQpEZ",
+   "status": "Active"
+  },
+  {
+   "id": "recW6z9xZEi2o23Oc",
+   "name": "Jose Wilfredo Vargas",
+   "facilityId": "recRb22Q5h64hQpEZ",
+   "status": "Active"
+  },
+  {
+   "id": "recBhVVA7Gh4KmQV5",
+   "name": "Justin Munoz",
+   "facilityId": "rec9H145bIJjf0uf1",
+   "status": "Active"
+  },
+  {
+   "id": "recVTeRg1Ar3PoPZu",
+   "name": "Louis Talbert",
+   "facilityId": "recRb22Q5h64hQpEZ",
+   "status": "Active"
+  },
+  {
+   "id": "recRj3QfkFx6LgRQF",
+   "name": "Marcos Pedraza",
+   "facilityId": "rec9H145bIJjf0uf1",
+   "status": "Active"
+  },
+  {
+   "id": "recBai2E7c2wGpGyC",
+   "name": "Marcos Pedraza (#16)",
+   "facilityId": "rec9H145bIJjf0uf1",
+   "status": "Active"
+  },
+  {
+   "id": "rec7pE1RyaHxQ5uNC",
+   "name": "Reynaldo Barron",
+   "facilityId": "recRb22Q5h64hQpEZ",
+   "status": "Active"
+  },
+  {
+   "id": "recaARdtWRwZlUOHl",
+   "name": "Ruben Nungaray",
+   "facilityId": "recRb22Q5h64hQpEZ",
    "status": "Active"
   }
  ],
