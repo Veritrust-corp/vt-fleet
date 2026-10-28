@@ -1,6 +1,6 @@
 /* VeriTrust Fleet iPad app — lists from Airtable. Regenerated when drivers/trucks change. */
 window.FLEET_DATA={
- "updated": "2026-10-28T02:25Z",
+ "updated": "2026-10-28T02:30Z",
  "webhook": "https://hooks.airtable.com/workflows/v1/genericWebhook/app1TTblDfyYoWyiA/wflcsBjW5djHCQzoF/wtrAJVMfdIus5Qceq",
  "pinHash": "27b06da2d276152e0952f85805692a5e8bac164c5f805eccf2183acb87fa9cc7",
  "filesEnabled": false,
@@ -112,12 +112,6 @@ window.FLEET_DATA={
   {
    "id": "recRj3QfkFx6LgRQF",
    "name": "Marcos Pedraza",
-   "facilityId": "rec9H145bIJjf0uf1",
-   "status": "Active"
-  },
-  {
-   "id": "recBai2E7c2wGpGyC",
-   "name": "Marcos Pedraza (#16)",
    "facilityId": "rec9H145bIJjf0uf1",
    "status": "Active"
   },
