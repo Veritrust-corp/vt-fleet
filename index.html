@@ -700,13 +700,14 @@ async function diagramComposite(type,marks){const parts=[];for(const s of SIDES)
   let y=0;for(let r=0;r<2;r++){for(let k=0;k<2;k++){const i=rows[r][k];const im=await loadImg(parts[i].url);ctx.drawImage(im,k*cw,y,cw,parts[i].h);
     ctx.fillStyle="#333";ctx.font="bold 22px Arial";ctx.fillText(SIDES[i].toUpperCase(),k*cw+12,y+28)}y+=hs[r]+30}
   return await new Promise(r=>c.toBlob(r,"image/jpeg",0.85))}
+async function fitDataUrl(blob,type){let du=await blobToDataUrl(blob);if(du.length<=95000)return du;try{const img=await loadImg(du);let max=1280,q=0.7;for(let i=0;i<12;i++){const k=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));const c=document.createElement("canvas");c.width=Math.round(img.naturalWidth*k);c.height=Math.round(img.naturalHeight*k);const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);du=c.toDataURL("image/jpeg",q);if(du.length<=95000)return du;if(q>0.45)q-=0.1;else max=Math.round(max*0.8)}}catch(e){}return du}
 async function sendFiles(no,type,doc){
   try{const files=[];
     files.push({field:"diagram",name:no+"-diagram.jpg",contentType:"image/jpeg",blob:await diagramComposite(type,doc.marks)});
     const sc=document.createElement("canvas");sc.width=900;sc.height=270;drawSig(sc,doc.sig||[]);files.push({field:"signature",name:no+"-signature.png",contentType:"image/png",blob:await new Promise(r=>sc.toBlob(r,"image/png"))});
     (doc.photoBlobs||[]).forEach((b,i)=>files.push({field:"photo",name:no+"-photo-"+(i+1)+".jpg",contentType:"image/jpeg",blob:b}));
     await new Promise(r=>setTimeout(r,8000));
-    for(const f of files){const du=await blobToDataUrl(f.blob);await post({kind:"file",pin:doc.pin,reportNo:no,type,field:f.field,name:f.name,contentType:f.contentType,b64:du.split(",")[1]});await new Promise(r=>setTimeout(r,2500))}
+    for(const f of files){const du=await fitDataUrl(f.blob);if(du.startsWith("data:image/jpeg")&&f.contentType==="image/png"){f.contentType="image/jpeg";f.name=f.name.replace(/\.png$/,".jpg")}await post({kind:"file",pin:doc.pin,reportNo:no,type,field:f.field,name:f.name,contentType:f.contentType,b64:du.split(",")[1]});await new Promise(r=>setTimeout(r,2500))}
   }catch(e){}}
 
 let lastSaved=null;
