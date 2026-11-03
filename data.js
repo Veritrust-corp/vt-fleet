@@ -3,7 +3,7 @@ window.FLEET_DATA={
  "updated": "2026-10-28T02:30Z",
  "webhook": "https://hooks.airtable.com/workflows/v1/genericWebhook/app1TTblDfyYoWyiA/wflcsBjW5djHCQzoF/wtrAJVMfdIus5Qceq",
  "pinHash": "27b06da2d276152e0952f85805692a5e8bac164c5f805eccf2183acb87fa9cc7",
- "filesEnabled": false,
+ "filesEnabled": true,
  "facilities": [
   {
    "id": "rec9H145bIJjf0uf1",
