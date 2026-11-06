@@ -1,6 +1,6 @@
 /* VeriTrust Fleet iPad app — lists from Airtable. Regenerated when drivers/trucks change. */
 window.FLEET_DATA={
- "updated": "2026-10-28T02:30Z",
+ "updated": "2026-11-05T05:21Z",
  "webhook": "https://hooks.airtable.com/workflows/v1/genericWebhook/app1TTblDfyYoWyiA/wflcsBjW5djHCQzoF/wtrAJVMfdIus5Qceq",
  "pinHash": "27b06da2d276152e0952f85805692a5e8bac164c5f805eccf2183acb87fa9cc7",
  "filesEnabled": true,
@@ -65,6 +65,12 @@ window.FLEET_DATA={
    "id": "recDo6PpqEippvoqp",
    "name": "Gilbert Ybarra",
    "facilityId": "rec9H145bIJjf0uf1",
+   "status": "Active"
+  },
+  {
+   "id": "rec50CdXLZr6Rn5Sx",
+   "name": "Gus Garcia",
+   "facilityId": "recRb22Q5h64hQpEZ",
    "status": "Active"
   },
   {
@@ -197,13 +203,6 @@ window.FLEET_DATA={
    "truckNo": "VT-5202",
    "type": "Truck",
    "facilityId": "recgRrtC43LfumleS",
-   "status": "Active"
-  },
-  {
-   "id": "recjSNtpj32eQqe02",
-   "truckNo": "VTS-5479",
-   "type": "Truck",
-   "facilityId": "recRb22Q5h64hQpEZ",
    "status": "Active"
   },
   {
