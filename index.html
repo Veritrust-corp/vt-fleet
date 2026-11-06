@@ -393,6 +393,13 @@ function loadDraft(){try{const d=JSON.parse(localStorage.getItem("dvir-draft")||
 function clearDraft(){try{localStorage.removeItem("dvir-draft")}catch(e){}}
 let draftT;function draft(){clearTimeout(draftT);draftT=setTimeout(saveDraft,600)}
 
+/* ---------- pre-trip memory (same driver + truck + day → Post-Trip starting mileage auto-fills) ---------- */
+function todayStr(){const n=new Date();return n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0")}
+function loadPreTrips(){try{const a=JSON.parse(localStorage.getItem("vt-pretrips")||"[]");const t=todayStr();const kept=a.filter(r=>r&&r.date===t);if(kept.length!==a.length){try{localStorage.setItem("vt-pretrips",JSON.stringify(kept))}catch(e){}}return kept}catch(e){return[]}}
+function savePreTrip(rec){try{const a=loadPreTrips();a.push(rec);localStorage.setItem("vt-pretrips",JSON.stringify(a))}catch(e){}}
+function findPreTripStart(driverId,vehicleId){if(!driverId||!vehicleId)return null;const t=todayStr();const a=loadPreTrips();for(let i=a.length-1;i>=0;i--){const r=a[i];if(r.date===t&&r.driverId===driverId&&r.vehicleId===vehicleId&&r.startMiles!=null&&!isNaN(r.startMiles))return r.startMiles}return null}
+function autoFillStartFromPreTrip(){if(F.inspection!=="Post-Trip")return;if(!F.driverId||!F.vehicleId)return;if(String(F.startMiles||"").trim())return;const m=findPreTripStart(F.driverId,F.vehicleId);if(m==null)return;F.startMiles=String(m);const el=document.getElementById("startMiles");if(el)el.value=F.startMiles;if(typeof miles==="function")miles();draft();try{toast("Starting mileage from your pre-trip: "+Number(m).toLocaleString())}catch(e){}}
+
 /* ---------- clock ---------- */
 function tick(){const n=new Date();$("#clock").textContent=n.toLocaleString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"});$("#sigDate").textContent=fmtD(n.toISOString())}
 tick();setInterval(tick,30000);
@@ -423,7 +430,7 @@ function setType(t){F.type=t;$("#typeTruck").setAttribute("aria-pressed",t==="tr
   const v=byId(S.fleet,F.vehicleId);if(v&&v.type&&v.type.toLowerCase()!==t){F.vehicleId="";}
   renderChecks();renderPanels();renderPickers();draft()}
 $("#typeTruck").onclick=()=>setType("truck");$("#typeVan").onclick=()=>setType("van");
-function setIns(v){F.inspection=v;const el=document.getElementById("endLbl");if(el)el.classList.toggle("req",v==="Post-Trip");$("#insPre").setAttribute("aria-pressed",v==="Pre-Trip");$("#insPost").setAttribute("aria-pressed",v==="Post-Trip");draft()}
+function setIns(v){F.inspection=v;const el=document.getElementById("endLbl");if(el)el.classList.toggle("req",v==="Post-Trip");$("#insPre").setAttribute("aria-pressed",v==="Pre-Trip");$("#insPost").setAttribute("aria-pressed",v==="Post-Trip");draft();autoFillStartFromPreTrip()}
 $("#insPre").onclick=()=>setIns("Pre-Trip");$("#insPost").onclick=()=>setIns("Post-Trip");
 function miles(){const a=parseInt(F.startMiles,10),b=parseInt(F.endMiles,10);const el=$("#totalMiles");
   if(!isNaN(a)&&!isNaN(b)){const t=b-a;el.textContent=t.toLocaleString()+" mi";el.style.color=t<0?"var(--defect)":""}else{el.textContent="—";el.style.color=""}}
@@ -476,10 +483,10 @@ function addDriverBlock(close,typed){
   return box}
 $("#pickDriver").onclick=()=>{const groups=S.facilities.map(f=>({title:f.name,items:activeDrivers().filter(d=>d.facilityId===f.id).map(d=>({id:d.id,label:d.name}))}));
   const other=activeDrivers().filter(d=>!byId(S.facilities,d.facilityId));if(other.length)groups.push({title:"Other",items:other.map(d=>({id:d.id,label:d.name}))});
-  openPicker({title:"Drivers name",groups,selected:F.driverId,addDriver:true,onPick:id=>{F.driverId=id;const d=byId(S.drivers,id);if(d&&!F.facilityId)F.facilityId=d.facilityId||"";renderPickers();draft()}})};
+  openPicker({title:"Drivers name",groups,selected:F.driverId,addDriver:true,onPick:id=>{F.driverId=id;const d=byId(S.drivers,id);if(d&&!F.facilityId)F.facilityId=d.facilityId||"";renderPickers();draft();autoFillStartFromPreTrip()}})};
 $("#pickVehicle").onclick=()=>{const act=S.fleet.filter(v=>(v.status||"Active")!=="Decommissioned").sort((a,b)=>a.truckNo.localeCompare(b.truckNo));
   const groups=["Truck","Van"].map(t=>({title:t+"s",items:act.filter(v=>v.type===t).map(v=>({id:v.id,label:v.truckNo,sub:facName(v.facilityId)+(v.status&&v.status!=="Active"?" · "+v.status:"")}))}));
-  openPicker({title:"Truck No.",groups,selected:F.vehicleId,onPick:id=>{F.vehicleId=id;const v=byId(S.fleet,id);if(v){if(v.facilityId)F.facilityId=v.facilityId;const t=(v.type||"").toLowerCase();if(t&&t!==F.type){setType(t);F.vehicleId=id}}renderPickers();draft()}})};
+  openPicker({title:"Truck No.",groups,selected:F.vehicleId,onPick:id=>{F.vehicleId=id;const v=byId(S.fleet,id);if(v){if(v.facilityId)F.facilityId=v.facilityId;const t=(v.type||"").toLowerCase();if(t&&t!==F.type){setType(t);F.vehicleId=id}}renderPickers();draft();autoFillStartFromPreTrip()}})};
 $("#pickLocation").onclick=()=>openPicker({title:"Location",groups:[{items:S.facilities.map(f=>({id:f.id,label:f.name}))}],selected:F.facilityId,onPick:id=>{F.facilityId=id;renderPickers();draft()}});
 
 /* ---------- mic ---------- */
@@ -733,10 +740,12 @@ $("#submitBtn").onclick=async()=>{
     const payload={pin,reportNo:no,type:F.type,inspection:F.inspection,date,createdAt:doc.createdAt,
       driverId:d.isNew?null:F.driverId,newDriver:d.isNew?{name:d.name,cell:d.cell||"",facilityId:d.facilityId||""}:null,
       vehicleId:F.vehicleId,facilityId:F.facilityId,startMiles:doc.startMiles,endMiles:doc.endMiles,items:doc.items,safety:doc.safety,
-      trailerNo:doc.trailerNo,trailerItems,remarks:doc.remarks,symbols,satisfactory:!!F.satisfactory};
+      trailerNo:doc.trailerNo,trailerItems,remarks:doc.remarks,symbols,satisfactory:!!F.satisfactory,
+      closesPreTrip:F.inspection==="Post-Trip"};
     let sent=true;
     if(navigator.onLine===false){sent=false}else{try{await post(payload)}catch(e){sent=false}}
     if(!sent)setOutbox(outbox().concat([payload]));
+    if(F.inspection==="Pre-Trip"&&doc.startMiles!=null&&!isNaN(doc.startMiles))savePreTrip({date:date,driverId:F.driverId,vehicleId:F.vehicleId,startMiles:doc.startMiles,createdAt:doc.createdAt,reportNo:no});
     if(sent&&D.filesEnabled)sendFiles(no,F.type,doc);
     lastSaved=doc;clearDraft();$("#pin").value="";
     $("#doneNo").textContent=no;
