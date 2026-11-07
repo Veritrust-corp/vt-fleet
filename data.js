@@ -1,6 +1,6 @@
 /* VeriTrust Fleet iPad app — lists from Airtable. Regenerated when drivers/trucks change. */
 window.FLEET_DATA={
- "updated": "2026-11-05T05:21Z",
+ "updated": "2026-11-07T05:21Z",
  "webhook": "https://hooks.airtable.com/workflows/v1/genericWebhook/app1TTblDfyYoWyiA/wflcsBjW5djHCQzoF/wtrAJVMfdIus5Qceq",
  "pinHash": "27b06da2d276152e0952f85805692a5e8bac164c5f805eccf2183acb87fa9cc7",
  "filesEnabled": true,
@@ -143,43 +143,8 @@ window.FLEET_DATA={
    "status": "Active"
   },
   {
-   "id": "rec8yh9q3kbHInJdC",
-   "truckNo": "VTS-3485",
-   "type": "Truck",
-   "facilityId": "recRb22Q5h64hQpEZ",
-   "status": "Active"
-  },
-  {
-   "id": "recEdA2ZFAQhZ3aYo",
-   "truckNo": "VT-2200",
-   "type": "Truck",
-   "facilityId": "rec9H145bIJjf0uf1",
-   "status": "Active"
-  },
-  {
-   "id": "recJSmMVGkVPIqV3j",
-   "truckNo": "VTV-1774",
-   "type": "Van",
-   "facilityId": "recRb22Q5h64hQpEZ",
-   "status": "Active"
-  },
-  {
-   "id": "recOhPMqOPkUn7oRW",
-   "truckNo": "VTV-0765",
-   "type": "Van",
-   "facilityId": "recRb22Q5h64hQpEZ",
-   "status": "Active"
-  },
-  {
    "id": "recSFloChPTa7ctAh",
    "truckNo": "R-565621",
-   "type": "Truck",
-   "facilityId": "rec9H145bIJjf0uf1",
-   "status": "Active"
-  },
-  {
-   "id": "recU4u1pqLV5Qk4ni",
-   "truckNo": "VT-0672",
    "type": "Truck",
    "facilityId": "rec9H145bIJjf0uf1",
    "status": "Active"
@@ -192,10 +157,24 @@ window.FLEET_DATA={
    "status": "Active"
   },
   {
-   "id": "recbSsUdOqUpzuVyx",
-   "truckNo": "VTS-1375",
+   "id": "recscMTfGORLZEgkV",
+   "truckNo": "R-587941",
    "type": "Truck",
    "facilityId": "recRb22Q5h64hQpEZ",
+   "status": "Active"
+  },
+  {
+   "id": "recU4u1pqLV5Qk4ni",
+   "truckNo": "VT-0672",
+   "type": "Truck",
+   "facilityId": "rec9H145bIJjf0uf1",
+   "status": "Active"
+  },
+  {
+   "id": "recEdA2ZFAQhZ3aYo",
+   "truckNo": "VT-2200",
+   "type": "Truck",
+   "facilityId": "rec9H145bIJjf0uf1",
    "status": "Active"
   },
   {
@@ -206,8 +185,15 @@ window.FLEET_DATA={
    "status": "Active"
   },
   {
-   "id": "recscMTfGORLZEgkV",
-   "truckNo": "R-587941",
+   "id": "recbSsUdOqUpzuVyx",
+   "truckNo": "VTS-1375",
+   "type": "Truck",
+   "facilityId": "recRb22Q5h64hQpEZ",
+   "status": "Active"
+  },
+  {
+   "id": "rec8yh9q3kbHInJdC",
+   "truckNo": "VTS-3485",
    "type": "Truck",
    "facilityId": "recRb22Q5h64hQpEZ",
    "status": "Active"
@@ -217,6 +203,20 @@ window.FLEET_DATA={
    "truckNo": "VTS-8941",
    "type": "Truck",
    "facilityId": "rec9H145bIJjf0uf1",
+   "status": "Active"
+  },
+  {
+   "id": "recOhPMqOPkUn7oRW",
+   "truckNo": "VTV-0765",
+   "type": "Van",
+   "facilityId": "recRb22Q5h64hQpEZ",
+   "status": "Active"
+  },
+  {
+   "id": "recJSmMVGkVPIqV3j",
+   "truckNo": "VTV-1774",
+   "type": "Van",
+   "facilityId": "recRb22Q5h64hQpEZ",
    "status": "Active"
   }
  ]
