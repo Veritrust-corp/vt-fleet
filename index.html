@@ -115,6 +115,14 @@ main{max-width:1020px;margin:0 auto;padding-block:18px 80px;padding-left:max(16p
 .chk.defect:has(input:checked){background:var(--defect-soft);border-color:var(--defect)}
 .chk.safe input:checked + .box{background:var(--ok);border-color:var(--ok);color:#fff}
 .chk.safe:has(input:checked){background:var(--ok-soft);border-color:var(--ok)}
+.fx{margin-top:12px;border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));align-items:end}
+.fx[hidden]{display:none}
+.fx .fx-t{grid-column:1/-1;font-weight:700}
+.fx .fx-t small{font-weight:500;color:var(--muted);margin-left:6px}
+.fx .seg{display:flex}
+.fx .seg button{flex:1;padding:8px 10px}
+.fx .seg button#fxFull[aria-pressed="true"]{background:var(--ok);color:#fff}
+.fx .seg button#fxLow[aria-pressed="true"]{background:#D7261E;color:#fff}
 .chk:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:1px}
 .chk.sub{margin-left:0}
 .count{font-family:var(--f-mono);font-size:13px;padding:2px 8px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line)}
@@ -286,7 +294,18 @@ main{max-width:1020px;margin:0 auto;padding-block:18px 80px;padding-left:max(16p
 
     <div class="sheet">
       <div class="sheet-h"><h2>Safety Equipment Check</h2><span class="hint">Check each item that is on board.</span><span class="count" id="safeCount">0 of 6</span></div>
-      <div class="sheet-b"><div class="checks" id="safetyChecks"></div></div>
+      <div class="sheet-b"><div class="checks" id="safetyChecks"></div>
+        <div class="fx" id="fxBox" hidden>
+          <div class="fx-t">Fire extinguisher<small>Read the tag and the gauge.</small></div>
+          <div class="field"><label for="fxExp" class="req">Expiration date</label><input id="fxExp" type="date"></div>
+          <div class="field"><span class="lbl req">Gauge level</span><div class="seg" role="group" aria-label="Fire extinguisher gauge level"><button type="button" id="fxFull" aria-pressed="false">Fully charged</button><button type="button" id="fxLow" aria-pressed="false">Needs charging</button></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sheet">
+      <div class="sheet-h"><h2>Documents &amp; PPE</h2><span class="hint">Check each item that is in the vehicle.</span><span class="count" id="docCount">0 of 4</span></div>
+      <div class="sheet-b"><div class="checks" id="docChecks"></div></div>
     </div>
 
     <div class="sheet" id="trailerSheet">
@@ -360,6 +379,8 @@ main{max-width:1020px;margin:0 auto;padding-block:18px 80px;padding-left:max(16p
 const TRUCK_ITEMS=["Air Compressor","Air Lines","Battery","Belts and Hoses","Brake Accessories","Brakes, Parking","Brakes, Service","Clutch","Defroster/Heater","Engine","Fluid Levels","Radiator","Reflectors","Front Axle","Fuel Tanks","Horn(s)","Lights","Lights - Brakes","Lights - Head / Stop","Lights - Tail / Dash","Lights - Turn Indicators","Mirrors","Oil Pressure","Steering","Tires","Transmission","Wheels and Rims","Windows","Windshield Wipers and Washers","Other"];
 const VAN_ITEMS=["Battery","Brakes, Service","Defroster/Heater","Fluid Levels","Frame and Assembly","Front Axle","Fuel Tanks","Horn(s)","Lights","Lights - Brake","Lights - Head / Stop","Lights - Tail / Dash","Lights - Turn Indicators","Mirrors","Oil Pressure","Radiator","Reflectors","Steering","Suspension System","Tires","Transmission","Wheels and Rims","Windows","Windshield Wipers & Washers","Other"];
 const SAFETY=["Safety Equipment on Board","Fire Extinguisher","Flags - Flares - Fuses","Reflective Triangles","Spare Fuses","Spare Bulbs"];
+const DOCS=["Insurance Card","Crash Kit","Registration","PPE"];
+const FX="Fire Extinguisher",GAUGES=["Fully charged","Needs charging"];
 const TRAILER=["Brakes","Doors","Landing Gear","Lights-All","Reflectors/Reflective Tape","Roof","Suspension System","Tires","Wheels and Rims","Other"];
 const SYMBOLS=[["C","Cut"],["H","Hole"],["D","Dent"],["BR","Broken"],["M","Missing"],["S","Scratch"],["P","Patched"]];
 const SIDES=["right","front","left","back"];
@@ -373,7 +394,7 @@ const S={db:null,user:null,assets:null,downloads:null,uid:null,canEdit:false,can
   facilities:[],fleet:[],drivers:[],reports:[],reviews:{},fleetArchive:[],driversArchive:[],loaded:{fleet:false,drivers:false,facilities:false,reports:false},
   view:"new",filter:"all",tool:"pen",sym:"D",history:[]};
 const blankForm=()=>({type:"truck",inspection:"Pre-Trip",driverId:"",vehicleId:"",facilityId:"",startMiles:"",endMiles:"",trailerNo:"",
-  items:[],safety:[],trailerItems:[],remarks:"",marks:{right:[],front:[],left:[],back:[]},photos:[],sig:[],satisfactory:false});
+  items:[],safety:[],docs:[],fxExp:"",fxGauge:"",trailerItems:[],remarks:"",marks:{right:[],front:[],left:[],back:[]},photos:[],sig:[],satisfactory:false});
 let F=blankForm();
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -415,14 +436,25 @@ function renderChecks(){
   const items=F.type==="truck"?TRUCK_ITEMS:VAN_ITEMS;
   F.items=F.items.filter(x=>items.includes(x));
   const ic=$("#itemChecks");ic.replaceChildren(...items.map(it=>chk(it,"defect",F.items.includes(it),on=>{toggleIn(F.items,it,on);counts();draft()},SUBLIGHT.test(it))));
-  $("#safetyChecks").replaceChildren(...SAFETY.map(it=>chk(it,"safe",F.safety.includes(it),on=>{toggleIn(F.safety,it,on);counts();draft()})));
+  $("#safetyChecks").replaceChildren(...SAFETY.map(it=>chk(it,"safe",F.safety.includes(it),on=>{toggleIn(F.safety,it,on);if(it===FX&&!on){F.fxExp="";F.fxGauge=""}renderFx();counts();draft()})));
+  if(!Array.isArray(F.docs))F.docs=[];
+  $("#docChecks").replaceChildren(...DOCS.map(it=>chk(it,"safe",F.docs.includes(it),on=>{toggleIn(F.docs,it,on);counts();draft()})));
+  renderFx();
   $("#trailerChecks").replaceChildren(...TRAILER.map(it=>chk(it,"defect",F.trailerItems.includes(it),on=>{toggleIn(F.trailerItems,it,on);counts();draft()})));
   $("#trailerSheet").hidden=F.type!=="truck";
   counts()}
+function renderFx(){
+  const on=F.safety.includes(FX);$("#fxBox").hidden=!on;
+  $("#fxExp").value=on?(F.fxExp||""):"";
+  $("#fxFull").setAttribute("aria-pressed",on&&F.fxGauge===GAUGES[0]);$("#fxLow").setAttribute("aria-pressed",on&&F.fxGauge===GAUGES[1])}
+$("#fxExp").addEventListener("change",e=>{F.fxExp=e.target.value;draft()});
+$("#fxFull").addEventListener("click",()=>{F.fxGauge=GAUGES[0];renderFx();draft()});
+$("#fxLow").addEventListener("click",()=>{F.fxGauge=GAUGES[1];renderFx();draft()});
 function counts(){
   const n=F.items.length+(F.type==="truck"?F.trailerItems.length:0);
   const dc=$("#defCount");dc.textContent=n+(n===1?" defect":" defects");dc.className="count"+(n?" bad":"");
-  const s=F.safety.length;const sc=$("#safeCount");sc.textContent=s+" of 6 on board";sc.className="count "+(s===6?"good":"warn")}
+  const s=F.safety.length;const sc=$("#safeCount");sc.textContent=s+" of 6 on board";sc.className="count "+(s===6?"good":"warn");
+  const dn=(F.docs||[]).length;const dcc=$("#docCount");dcc.textContent=dn+" of 4 in vehicle";dcc.className="count "+(dn===4?"good":"warn")}
 
 /* ---------- header controls ---------- */
 function setType(t){F.type=t;$("#typeTruck").setAttribute("aria-pressed",t==="truck");$("#typeVan").setAttribute("aria-pressed",t==="van");
@@ -594,7 +626,7 @@ function drawSig(canvas,strokes,color){const ctx=canvas.getContext("2d");const W
 /* ---------- submit ---------- */
 function reportNo(type){const n=new Date();const p=x=>String(x).padStart(2,"0");const r=Math.random().toString(36).slice(2,4).toUpperCase();
   return "DVIR-"+(type==="truck"?"T":"V")+"-"+String(n.getFullYear()).slice(2)+p(n.getMonth()+1)+p(n.getDate())+"-"+p(n.getHours())+p(n.getMinutes())+r}
-function validate(){const e=[];if(!F.driverId)e.push("driver");if(!F.vehicleId)e.push("truck number");if(!F.facilityId)e.push("location");if(!String(F.startMiles||"").trim())e.push("starting mileage");if(F.inspection==="Post-Trip"&&!String(F.endMiles||"").trim())e.push("ending mileage");if(!F.sig.length)e.push("signature");
+function validate(){const e=[];if(!F.driverId)e.push("driver");if(!F.vehicleId)e.push("truck number");if(!F.facilityId)e.push("location");if(!String(F.startMiles||"").trim())e.push("starting mileage");if(F.inspection==="Post-Trip"&&!String(F.endMiles||"").trim())e.push("ending mileage");if(F.safety.includes(FX)){if(!/^\d{4}-\d{2}-\d{2}$/.test(F.fxExp||""))e.push("fire extinguisher expiration date");if(!GAUGES.includes(F.fxGauge))e.push("fire extinguisher gauge level")}if(!F.sig.length)e.push("signature");
   const a=parseInt(F.startMiles,10),b=parseInt(F.endMiles,10);let msg=e.length?"Add the "+e.join(", ")+" before submitting.":"";
   if(!isNaN(a)&&!isNaN(b)&&b<a)msg+=(msg?" ":"")+"Ending mileage is lower than starting mileage.";return msg}
 function resetForm(){F.photos.forEach(p=>URL.revokeObjectURL(p.url));const keep={driverId:F.driverId,facilityId:F.facilityId};F=blankForm();Object.assign(F,keep);clearDraft();S.history=[];fillForm()}
@@ -630,6 +662,8 @@ async function downloadPdf(r){
   const items=r.type==="truck"?TRUCK_ITEMS:VAN_ITEMS;
   section("Inspection items","(checked = defect found)");doc.setFont("helvetica","bold");grid(items,r.items||[],false,3);
   section("Safety equipment check","(checked = on board)");grid(SAFETY,r.safety||[],true,3);
+  if(r.fireExt&&(r.fireExt.exp||r.fireExt.gauge)){const fe=r.fireExt,ex=fe.exp?fe.exp.slice(5,7)+"/"+fe.exp.slice(8,10)+"/"+fe.exp.slice(0,4):"not given";doc.setFont("helvetica","normal");doc.setFontSize(9);doc.text("Fire extinguisher: expires "+ex+"   Gauge: "+(fe.gauge||"not given"),M,y);y+=14}
+  section("Documents & PPE","(checked = in the vehicle)");grid(DOCS,r.docs||[],true,4);
   if(r.type==="truck"){section("Trailer(s)","(checked = defect found)");grid(TRAILER,r.trailerItems||[],false,4)}
   section("Remarks");doc.setFont("helvetica","normal");doc.setFontSize(9.5);const rem=doc.splitTextToSize(r.remarks||"None",PW-2*M);doc.text(rem.slice(0,10),M,y);y+=Math.min(rem.length,10)*12+6;
   doc.setFont("helvetica","bolditalic");doc.setFontSize(8);doc.text("MARK CLEARLY ALL DAMAGE OR DEFICIENCIES FOUND BY USING THE FOLLOWING SYMBOLS",PW/2,y,{align:"center"});y+=10;
@@ -734,12 +768,12 @@ $("#submitBtn").onclick=async()=>{
     const doc={reportNo:no,type:F.type,inspection:F.inspection,createdAt:n.toISOString(),
       driverId:F.driverId,driverName:d.name||"",vehicleId:F.vehicleId,truckNo:v.truckNo||"",facilityId:F.facilityId,location:f.name||"",
       startMiles:isNaN(a)?null:a,endMiles:isNaN(b)?null:b,totalMiles:(!isNaN(a)&&!isNaN(b))?b-a:null,
-      items:F.items.slice(),safety:F.safety.slice(),safetyMissing:SAFETY.filter(x=>!F.safety.includes(x)),trailerNo:F.trailerNo.trim(),trailerItems,
+      items:F.items.slice(),safety:F.safety.slice(),safetyMissing:SAFETY.filter(x=>!F.safety.includes(x)),docs:(F.docs||[]).slice(),docsMissing:DOCS.filter(x=>!(F.docs||[]).includes(x)),fireExt:F.safety.includes(FX)?{exp:F.fxExp,gauge:F.fxGauge}:null,trailerNo:F.trailerNo.trim(),trailerItems,
       defects:F.items.length+trailerItems.length,remarks:F.remarks.trim(),symbols,marks:JSON.parse(JSON.stringify(F.marks)),sig:F.sig.slice(),satisfactory:F.satisfactory,
       photoBlobs:F.photos.map(p=>p.blob),photoIds:[],pin};
     const payload={pin,reportNo:no,type:F.type,inspection:F.inspection,date,createdAt:doc.createdAt,
       driverId:d.isNew?null:F.driverId,newDriver:d.isNew?{name:d.name,cell:d.cell||"",facilityId:d.facilityId||""}:null,
-      vehicleId:F.vehicleId,facilityId:F.facilityId,startMiles:doc.startMiles,endMiles:doc.endMiles,items:doc.items,safety:doc.safety,
+      vehicleId:F.vehicleId,facilityId:F.facilityId,startMiles:doc.startMiles,endMiles:doc.endMiles,items:doc.items,safety:doc.safety,docs:doc.docs,fireExt:doc.fireExt,
       trailerNo:doc.trailerNo,trailerItems,remarks:doc.remarks,symbols,satisfactory:!!F.satisfactory,
       closesPreTrip:F.inspection==="Post-Trip"};
     let sent=true;
