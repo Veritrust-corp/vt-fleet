@@ -119,6 +119,8 @@ main{max-width:1020px;margin:0 auto;padding-block:18px 80px;padding-left:max(16p
 .fx[hidden]{display:none}
 .fx .fx-t{grid-column:1/-1;font-weight:700}
 .fx .fx-t small{font-weight:500;color:var(--muted);margin-left:6px}
+.fx .fx-hint{grid-column:1/-1;font-size:13px;color:var(--muted)}
+.fx .fx-hint[hidden]{display:none}
 .fx .seg{display:flex}
 .fx .seg button{flex:1;padding:8px 10px}
 .fx .seg button#fxFull[aria-pressed="true"]{background:var(--ok);color:#fff}
@@ -299,6 +301,7 @@ main{max-width:1020px;margin:0 auto;padding-block:18px 80px;padding-left:max(16p
           <div class="fx-t">Fire extinguisher<small>Read the tag and the gauge.</small></div>
           <div class="field"><label for="fxExp" class="req">Expiration date</label><input id="fxExp" type="date"></div>
           <div class="field"><span class="lbl req">Gauge level</span><div class="seg" role="group" aria-label="Fire extinguisher gauge level"><button type="button" id="fxFull" aria-pressed="false">Fully charged</button><button type="button" id="fxLow" aria-pressed="false">Needs charging</button></div></div>
+          <div class="fx-hint" id="fxHint" hidden>The date is saved from this vehicle's last report. Change it only if the extinguisher was replaced. Check the gauge every time.</div>
         </div>
       </div>
     </div>
@@ -394,7 +397,7 @@ const S={db:null,user:null,assets:null,downloads:null,uid:null,canEdit:false,can
   facilities:[],fleet:[],drivers:[],reports:[],reviews:{},fleetArchive:[],driversArchive:[],loaded:{fleet:false,drivers:false,facilities:false,reports:false},
   view:"new",filter:"all",tool:"pen",sym:"D",history:[]};
 const blankForm=()=>({type:"truck",inspection:"Pre-Trip",driverId:"",vehicleId:"",facilityId:"",startMiles:"",endMiles:"",trailerNo:"",
-  items:[],safety:[],docs:[],fxExp:"",fxGauge:"",trailerItems:[],remarks:"",marks:{right:[],front:[],left:[],back:[]},photos:[],sig:[],satisfactory:false});
+  items:[],safety:[],docs:[],fxExp:"",fxGauge:"",fxFrom:"",trailerItems:[],remarks:"",marks:{right:[],front:[],left:[],back:[]},photos:[],sig:[],satisfactory:false});
 let F=blankForm();
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -436,18 +439,25 @@ function renderChecks(){
   const items=F.type==="truck"?TRUCK_ITEMS:VAN_ITEMS;
   F.items=F.items.filter(x=>items.includes(x));
   const ic=$("#itemChecks");ic.replaceChildren(...items.map(it=>chk(it,"defect",F.items.includes(it),on=>{toggleIn(F.items,it,on);counts();draft()},SUBLIGHT.test(it))));
-  $("#safetyChecks").replaceChildren(...SAFETY.map(it=>chk(it,"safe",F.safety.includes(it),on=>{toggleIn(F.safety,it,on);if(it===FX&&!on){F.fxExp="";F.fxGauge=""}renderFx();counts();draft()})));
+  $("#safetyChecks").replaceChildren(...SAFETY.map(it=>chk(it,"safe",F.safety.includes(it),on=>{toggleIn(F.safety,it,on);if(it===FX&&!on){F.fxExp="";F.fxGauge="";F.fxFrom=""}renderFx();counts();draft()})));
   if(!Array.isArray(F.docs))F.docs=[];
   $("#docChecks").replaceChildren(...DOCS.map(it=>chk(it,"safe",F.docs.includes(it),on=>{toggleIn(F.docs,it,on);counts();draft()})));
   renderFx();
   $("#trailerChecks").replaceChildren(...TRAILER.map(it=>chk(it,"defect",F.trailerItems.includes(it),on=>{toggleIn(F.trailerItems,it,on);counts();draft()})));
   $("#trailerSheet").hidden=F.type!=="truck";
   counts()}
+function fxPrefill(){
+  /* fill the expiration date from the truck's saved date (data.js fxExp); never overwrite a date the driver typed */
+  if(!F.safety.includes(FX))return;const v=byId(S.fleet,F.vehicleId);const saved=v&&/^\d{4}-\d{2}-\d{2}$/.test(v.fxExp||"")?v.fxExp:"";
+  if(F.fxFrom&&F.fxFrom!==F.vehicleId){F.fxExp="";F.fxFrom=""}
+  if(!F.fxExp&&saved){F.fxExp=saved;F.fxFrom=F.vehicleId}}
 function renderFx(){
+  fxPrefill();
   const on=F.safety.includes(FX);$("#fxBox").hidden=!on;
+  $("#fxHint").hidden=!(on&&F.fxExp&&F.fxFrom&&F.fxFrom===F.vehicleId);
   $("#fxExp").value=on?(F.fxExp||""):"";
   $("#fxFull").setAttribute("aria-pressed",on&&F.fxGauge===GAUGES[0]);$("#fxLow").setAttribute("aria-pressed",on&&F.fxGauge===GAUGES[1])}
-$("#fxExp").addEventListener("change",e=>{F.fxExp=e.target.value;draft()});
+$("#fxExp").addEventListener("change",e=>{F.fxExp=e.target.value;F.fxFrom="";renderFx();draft()});
 $("#fxFull").addEventListener("click",()=>{F.fxGauge=GAUGES[0];renderFx();draft()});
 $("#fxLow").addEventListener("click",()=>{F.fxGauge=GAUGES[1];renderFx();draft()});
 function counts(){
@@ -518,7 +528,7 @@ $("#pickDriver").onclick=()=>{const groups=S.facilities.map(f=>({title:f.name,it
   openPicker({title:"Drivers name",groups,selected:F.driverId,addDriver:true,onPick:id=>{F.driverId=id;const d=byId(S.drivers,id);if(d&&!F.facilityId)F.facilityId=d.facilityId||"";renderPickers();draft();autoFillStartFromPreTrip()}})};
 $("#pickVehicle").onclick=()=>{const act=S.fleet.filter(v=>(v.status||"Active")!=="Decommissioned").sort((a,b)=>a.truckNo.localeCompare(b.truckNo));
   const groups=["Truck","Van"].map(t=>({title:t+"s",items:act.filter(v=>v.type===t).map(v=>({id:v.id,label:v.truckNo,sub:facName(v.facilityId)+(v.status&&v.status!=="Active"?" · "+v.status:"")}))}));
-  openPicker({title:"Truck No.",groups,selected:F.vehicleId,onPick:id=>{F.vehicleId=id;const v=byId(S.fleet,id);if(v){if(v.facilityId)F.facilityId=v.facilityId;const t=(v.type||"").toLowerCase();if(t&&t!==F.type){setType(t);F.vehicleId=id}}renderPickers();draft();autoFillStartFromPreTrip()}})};
+  openPicker({title:"Truck No.",groups,selected:F.vehicleId,onPick:id=>{F.vehicleId=id;const v=byId(S.fleet,id);if(v){if(v.facilityId)F.facilityId=v.facilityId;const t=(v.type||"").toLowerCase();if(t&&t!==F.type){setType(t);F.vehicleId=id}}renderPickers();renderFx();draft();autoFillStartFromPreTrip()}})};
 $("#pickLocation").onclick=()=>openPicker({title:"Location",groups:[{items:S.facilities.map(f=>({id:f.id,label:f.name}))}],selected:F.facilityId,onPick:id=>{F.facilityId=id;renderPickers();draft()}});
 
 /* ---------- mic ---------- */
