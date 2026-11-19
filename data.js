@@ -1,6 +1,6 @@
 /* VeriTrust Fleet iPad app — lists from Airtable. Regenerated when drivers/trucks change. */
 window.FLEET_DATA={
- "updated": "2026-11-07T05:21Z",
+ "updated": "2026-11-19T14:26Z",
  "webhook": "https://hooks.airtable.com/workflows/v1/genericWebhook/app1TTblDfyYoWyiA/wflcsBjW5djHCQzoF/wtrAJVMfdIus5Qceq",
  "pinHash": "27b06da2d276152e0952f85805692a5e8bac164c5f805eccf2183acb87fa9cc7",
  "filesEnabled": true,
@@ -105,6 +105,12 @@ window.FLEET_DATA={
   },
   {
    "id": "recBhVVA7Gh4KmQV5",
+   "name": "Justin Munoz",
+   "facilityId": "rec9H145bIJjf0uf1",
+   "status": "Active"
+  },
+  {
+   "id": "recqFRSGKDwdeNnoZ",
    "name": "Justin Munoz",
    "facilityId": "rec9H145bIJjf0uf1",
    "status": "Active"
