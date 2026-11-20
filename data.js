@@ -1,6 +1,6 @@
 /* VeriTrust Fleet iPad app — lists from Airtable. Regenerated when drivers/trucks change. */
 window.FLEET_DATA={
- "updated": "2026-11-19T14:42Z",
+ "updated": "2026-11-20T16:23Z",
  "webhook": "https://hooks.airtable.com/workflows/v1/genericWebhook/app1TTblDfyYoWyiA/wflcsBjW5djHCQzoF/wtrAJVMfdIus5Qceq",
  "pinHash": "27b06da2d276152e0952f85805692a5e8bac164c5f805eccf2183acb87fa9cc7",
  "filesEnabled": true,
@@ -197,6 +197,13 @@ window.FLEET_DATA={
    "type": "Truck",
    "facilityId": "recRb22Q5h64hQpEZ",
    "status": "Active"
+  },
+  {
+   "id": "recjSNtpj32eQqe02",
+   "truckNo": "VTS-5479",
+   "type": "Truck",
+   "facilityId": "recRb22Q5h64hQpEZ",
+   "status": "Insurance Claim"
   },
   {
    "id": "rectt95meZB5mXFCV",
